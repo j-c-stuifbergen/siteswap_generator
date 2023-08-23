@@ -16,6 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+/* TODO: split this class into a class for solo siteswap (and getin throws) and and extended class for passing
+*/
 package siteswaplib;
 
 import java.text.DecimalFormat;
@@ -37,11 +39,13 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 	private String mInvalidCharacters = "";
 	private boolean mIsParsingError = false;
 	private int mNumberOfSynchronousHands = 1;
-    // when there are n throws at the same time, each siteswap number can be at position
+    	// when there are n throws at the same time, each siteswap number can be at position
 	// 0, ... n-1 within the synchronous throws. The position of siteswap.at(0) is coded
 	// in mSynchronousStartPosition and is adapted on every rotation of the siteswap.
 	private int mSynchronousStartPosition = 0;
-
+	private string mStartingHands[] = {}; // this will contain handlabels, depending on the number of jugglers
+	private string[] handLabels = {"R","L"};
+		
 	public Siteswap() {
 		this(new byte[0]);
 	}
@@ -160,10 +164,25 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 		return mNumberOfJugglers;
 	}
 
+	private void setStartingHands() 
+	// set the starting hands for the cyclic part of the site-swap (not for the getin throws)
+	{	handsPerJuggler = mHandLabels.length; // usually, this is 2 of course...
+	 	mStartingHands = new string[mNumberOfJugglers];
+	 	for(int i = 0; i< mNumberOfJugglers; i++)
+		{	if (mNumberOfJugglers % handsPerJuggler = 0)
+			{	mStartingHands[i]=mHandLabels[0];
+			}
+		 	else // for odd teams, alternate L and R
+			{	mStartingHands[i]=mHandLabels[i%handsPerJuggler];
+			}
+		}
+	}
+	
 	private void setNumberOfJugglers(int numberOfJugglers) {
 		this.mNumberOfJugglers = numberOfJugglers;
 		if (numberOfJugglers < 1)
 			this.mNumberOfJugglers = 1;
+		setStartingHands()
 	}
 
 	public boolean setNumberOfSynchronousHands(int numberOfSynchronousHands) {
@@ -455,18 +474,18 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 	}
 
 	public class ClubDistribution {
-		public int leftHandNumberOfClubs;
-		public int rightHandNumberOfClubs;
+		public int secondHandNumberOfClubs;
+		public int firstHandNumberOfClubs;
 
-		public ClubDistribution(int left, int right) {
-			leftHandNumberOfClubs = left;
-			rightHandNumberOfClubs = right;
+		public ClubDistribution(int first, int second) {
+			firstHandNumberOfClubs = first;
+			secondHandNumberOfClubs = second;
 		}
 
 		@Override
 		public String toString() {
-			return String.valueOf(leftHandNumberOfClubs) + "|" +
-					String.valueOf(rightHandNumberOfClubs);
+			return String.valueOf(secondHandNumberOfClubs) + "|" +
+					String.valueOf(firstHandNumberOfClubs);
 		}
 
 		@Override
@@ -474,8 +493,8 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 			if (! (obj instanceof ClubDistribution))
 				return false;
 			ClubDistribution rhs = (ClubDistribution) obj;
-			return this.leftHandNumberOfClubs == rhs.leftHandNumberOfClubs &&
-					this.rightHandNumberOfClubs == rhs.rightHandNumberOfClubs;
+			return this.secondHandNumberOfClubs == rhs.secondHandNumberOfClubs &&
+					this.firstHandNumberOfClubs == rhs.firstHandNumberOfClubs;
 		}
 	}
 
@@ -487,11 +506,11 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 			int numberOfClubsForJuggler = getNumberOfObjects() / getNumberOfJugglers();
 			if (juggler < getNumberOfObjects() % getNumberOfJugglers())
 				numberOfClubsForJuggler++;
-			int numberOfClubsRightHand = numberOfClubsForJuggler / 2 + numberOfClubsForJuggler % 2;
-			int numberOfClubsLeftHand = numberOfClubsForJuggler / 2;
+			int numberOfClubsFirstHand = numberOfClubsForJuggler / 2 + numberOfClubsForJuggler % 2;
+			int numberOfClubsSecondHand = numberOfClubsForJuggler / 2;
 
 			groundStateClubDistribution[juggler] =
-					new ClubDistribution(numberOfClubsLeftHand, numberOfClubsRightHand);
+					new ClubDistribution(numberOfClubsFirstHand,numberOfClubsSecondHand);
 		}
 		return groundStateClubDistribution;
 	}
@@ -524,7 +543,7 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 				right = numberOfClubsSecondHand;
 				left = numberOfClubsStartingHand;
 			}
-			initialClubDistribution[juggler] = new ClubDistribution(left, right);
+			initialClubDistribution[juggler] = new ClubDistribution(right, left);
 		}
 
 		// Calculate new starting position, when only mandatory getins are thrown
@@ -534,22 +553,22 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 			int numberOfThrows = (getin.period_length() - i) / getNumberOfJugglers();
 			if (throwingJuggler >= getNumberOfJugglers() - (getin.period_length()-i) % getNumberOfJugglers())
 				numberOfThrows++;
-			boolean isRightHandThrowing = (numberOfThrows % 2) == 0;
+			boolean isFirstHandThrowing = (numberOfThrows % 2) == 0;
 			int catchingJuggler = (throwingJuggler + nonMandatoryGetin.at(i)) % getNumberOfJugglers();
-			boolean isRightHandCatching = ((throwingJuggler + nonMandatoryGetin.at(i)) /
+			boolean isFirstHandCatching = ((throwingJuggler + nonMandatoryGetin.at(i)) /
 					getNumberOfJugglers()) % 2 == 0;
-			if (!isRightHandThrowing)
-				isRightHandCatching = !isRightHandCatching;
+			if (!isFirstHandThrowing)
+				isFirstHandCatching = !isFirstHandCatching;
 
-			if (isRightHandThrowing)
-				initialClubDistribution[throwingJuggler].rightHandNumberOfClubs--;
+			if (isFirstHandThrowing)
+				initialClubDistribution[throwingJuggler].firstHandNumberOfClubs--;
 			else
-				initialClubDistribution[throwingJuggler].leftHandNumberOfClubs--;
+				initialClubDistribution[throwingJuggler].secondHandNumberOfClubs--;
 
-			if (isRightHandCatching)
-				initialClubDistribution[catchingJuggler].rightHandNumberOfClubs++;
+			if (isFirstHandCatching)
+				initialClubDistribution[catchingJuggler].firstHandNumberOfClubs++;
 			else
-				initialClubDistribution[catchingJuggler].leftHandNumberOfClubs++;
+				initialClubDistribution[catchingJuggler].secondHandNumberOfClubs++;
 		}
 
 		return initialClubDistribution;
