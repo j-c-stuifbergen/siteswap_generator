@@ -497,6 +497,7 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 	}
 
 	public ClubDistribution[] calculateInitialClubDistribution() {
+		/* TODO: take into account that jugglers may start left-handed in stead of right-handed */
 		ClubDistribution initialClubDistribution[] = new ClubDistribution[getNumberOfJugglers()];
 		Siteswap getin = calculateGetin();
 		Siteswap localGetins[] = calculateLocalGetins();
@@ -683,6 +684,7 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 					str += "<sub><small>";
 					if (mNumberOfJugglers >= 3)
 						str += Character.toString((char) ('A' + (position + at(position)) % mNumberOfJugglers));
+					/* TODO: take into account that jugglers may start left-handed */
 					if (((juggler + at(position)) / mNumberOfJugglers) % 2 == 0)
 						str += "x";
 					else
