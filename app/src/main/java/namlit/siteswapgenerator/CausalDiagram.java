@@ -120,6 +120,7 @@ public class CausalDiagram extends View {
         }
 
         for(int i = 0; i < mNumberOfNodes; ++i) {
+            /* TODO : take this information from mSiteswap, because not every juggler will start right-handed */
             boolean isRightHand = (i / mSiteswap.getNumberOfJugglers()) % 2 == 0;
 
             drawNode(canvas, getNodePosition(i).x, getNodePosition(i).y, mSiteswap.stringAt(i),
