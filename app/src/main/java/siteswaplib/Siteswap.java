@@ -484,12 +484,16 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 
 		@Override
 		public String toString() {
+			/* TODO: the result should depend on the labels of the hands (first L, then R) */
 			return String.valueOf(secondHandNumberOfClubs) + "|" +
 					String.valueOf(firstHandNumberOfClubs);
 		}
 
 		@Override
 		public boolean equals(Object obj) {
+			/* TODO: should the result depend on the labels of the hands (first L, then R)?
+   			   Is this method ever used, anyway? Otherwise, delete it?
+	 		*/
 			if (! (obj instanceof ClubDistribution))
 				return false;
 			ClubDistribution rhs = (ClubDistribution) obj;
