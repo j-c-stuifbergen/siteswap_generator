@@ -118,14 +118,9 @@ public class CausalDiagram extends View {
             canvas.drawText(Character.toString((char) ('A' + i)) + ":",
                     getPaddingLeft(), numberTextPosY, mJugglerNamePaint);
         }
-
         for(int i = 0; i < mNumberOfNodes; ++i) {
-            /* TODO : take this information from mSiteswap, because not every juggler will start right-handed */
-            boolean isRightHand = (i / mSiteswap.getNumberOfJugglers()) % 2 == 0;
-
             drawNode(canvas, getNodePosition(i).x, getNodePosition(i).y, mSiteswap.stringAt(i),
-                            isRightHand, isTextAbove(i));
-
+                            mSiteswap.handLabel(i), isTextAbove(i));
             drawConnection(canvas, i);
 
         }
@@ -137,8 +132,8 @@ public class CausalDiagram extends View {
     }
 
     private void drawNode(Canvas canvas, int x, int y, String number,
-                          boolean isRightHand, boolean isTextAbove) {
-        String handText = isRightHand ? new String("R") : new String("L");
+                          string handText, boolean isTextAbove) {
+        /* ToDo: check wheter handText should be of type String in stead of string, for use in drawText */
         float handTextPosY = isTextAbove?
                 y - mHandTextPaint.descent() - mNodeRadius :
                 y - mHandTextPaint.ascent() + mNodeRadius;
