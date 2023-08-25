@@ -563,15 +563,13 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 			int numberOfGetinsForJuggler = getin.period_length() / getNumberOfJugglers();
 			if (getin.period_length() % getNumberOfJugglers() >= (getNumberOfJugglers() - juggler))
 				numberOfGetinsForJuggler++;
-			boolean isStartRight = (numberOfGetinsForJuggler % 2) == 0;
-			int right = numberOfClubsStartingHand;
-			int left = numberOfClubsSecondHand;
-			if (!isStartRight) {
-				right = numberOfClubsSecondHand;
-				left = numberOfClubsStartingHand;
+			if ( (numberOfGetinsForJuggler % handLabels.length()) == 0)
+			{	initialClubDistribution[juggler] = new ClubDistribution(numberOfClubsStartingHand, numberOfClubsSecondHand);
 			}
-			initialClubDistribution[juggler] = new ClubDistribution(right, left);
-		}
+			else
+			{	initialClubDistribution[juggler] = new ClubDistribution(numberOfClubsSecondHand, numberOfClubsStartingHand);
+			}
+	}
 
 		// Calculate new starting position, when only mandatory getins are thrown
 		for (int i = 0; i < nonMandatoryGetin.period_length(); ++i) {
