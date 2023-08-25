@@ -43,9 +43,9 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 	// 0, ... n-1 within the synchronous throws. The position of siteswap.at(0) is coded
 	// in mSynchronousStartPosition and is adapted on every rotation of the siteswap.
 	private int mSynchronousStartPosition = 0;
-	private string RLabel = "R"; private string LLabel = "L"
-	private string[] handLabels = {RLabel, LLabel}; // can be extend to contain RFoot, Lfoot, head, back etc....
-	private string mHandLabelOrder[][] ; // to store wether the first or second hand is R: handLabels [ mHandLabelOrder[juggler][handIndex] ] =RLabel or =RLabel
+	private String RLabel = "R"; private String LLabel = "L"
+	private String[] handLabels = {RLabel, LLabel}; // can be extend to contain RFoot, Lfoot, head, back etc....
+	private String mHandLabelOrder[][] ; // to store wether the first or second hand is R: handLabels [ mHandLabelOrder[juggler][handIndex] ] =RLabel or =RLabel
 		
 	public Siteswap() {
 		this(new byte[0]);
@@ -57,6 +57,7 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 		setSiteswapName(s.getSiteswapName());
 		setNumberOfSynchronousHands(s.getNumberOfSynchronousHands());
 		setSynchronousStartPosition(s.getSynchronousStartPosition());
+		this.mhandLabelOrder = s.handLabelOrder();
 	}
 
 	public Siteswap(byte[] data, int numberOfJugglers) {
@@ -165,10 +166,25 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 		return mNumberOfJugglers;
 	}
 
+	public String [][] handLabelOrder()
+	{	handsPerJuggler = mHandLabels.length; // usually, this is 2 of course...
+	 	String [][] result = new String[mNumberOfJugglers][];
+	 	for(int jugglerIndex = 0; jugglerIndex< mNumberOfJugglers; jugglerIndex++)
+		{	int numberOfHands = mHandLabelOrder[jugglerIndex].length();
+			result[jugglerIndex] = new String[numberOfHands]
+			for (int handCounter=0; handCounter<numberOfHands ; handCounter++)
+			{	
+				result[jugglerIndex][handCounter]=
+					mHandLabelOrder[jugglerIndex][handCounter]
+			}
+		}
+	 	return result
+	}
+	
 	private void setHandLabelOrder() 
 	// set the starting hands for the cyclic part of the site-swap (not for the getin throws)
 	{	handsPerJuggler = mHandLabels.length; // usually, this is 2 of course...
-	 	mHandLabelOrder = new string[mNumberOfJugglers][handsPerJuggler];
+	 	mHandLabelOrder = new String[mNumberOfJugglers][handsPerJuggler];
 	 	boolean rotateHands = (0 != nNumberOfJugglers % handsPerJuggler)
 	 	for(int jugglerIndex = 0; jugglerIndex< mNumberOfJugglers; jugglerIndex++)
 		{	
@@ -709,7 +725,7 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 	{	 return mHandLabelOrder[jugglerIndex(i)][handLabelIndex(i)] ;
 	}
 
-	public string handLabel(int i)
+	public String handLabel(int i)
 	{	return handLabels[handLabelIndex(i)] ; 
 	}
 
