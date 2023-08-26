@@ -452,6 +452,8 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 		}
 
 		return localGetouts;
+
+		
 	}
 
 	public class ClubDistribution {
@@ -463,10 +465,16 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 			rightHandNumberOfClubs = right;
 		}
 
-		@Override
-		public String toString() {
-			return String.valueOf(leftHandNumberOfClubs) + "|" +
+		// not @Override, because the string conversion requires an argument
+		public String toString(boolean jugglerIsEven) {
+			if (juggglerIsEven)
+			{	return String.valueOf(leftHandNumberOfClubs) + "|" +
 					String.valueOf(rightHandNumberOfClubs);
+			}
+			else 	
+			{	return String.valueOf(leftHandNumberOfClubs) + "|" +
+					String.valueOf(rightHandNumberOfClubs);	
+			}
 		}
 
 		@Override
@@ -683,7 +691,16 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 					str += "<sub><small>";
 					if (mNumberOfJugglers >= 3)
 						str += Character.toString((char) ('A' + (position + at(position)) % mNumberOfJugglers));
-					if (((juggler + at(position)) / mNumberOfJugglers) % 2 == 0)
+					passIsStraight = ((juggler + at(position)) / mNumberOfJugglers) % 2 == 0;
+					if (mNunberOfJugglers % 2 == 1)	// for odd numbers, odd jugglers switch hands
+					{	if (juggler % 2 == 1 )  // swap L/R for throwing juggler
+						{	passIsStraight = !passIsStraight;
+						}
+					        if ((juggler + at(position)) % 2 == 1) // swap L/R for catching juggler
+						{	passIsStraight = !passIsStraight;
+						}
+					}
+					if (passIsStraight)
 						str += "x";
 					else
 						str += "||";
