@@ -314,7 +314,8 @@ public class DetailedSiteswapActivity extends AppCompatActivity
 
         for(int juggler = 0; juggler < mSiteswap.getNumberOfJugglers(); ++juggler) {
             localHtmlString += Character.toString((char) ('A' + juggler)) + " ";
-            localHtmlString += "<small>" + initialClubDistribution[juggler].toString() + "</small>";
+            boolean rightHandStart = (0==getNumberOfJugglers() %2 ) || (juggler % 2 == 0)
+            localHtmlString += "<small>" + initialClubDistribution[juggler].toString(rightHandStart) + "</small>";
             // initial clubs in hands
             localHtmlString += ": ";
             localHtmlString += "<font color=\"grey\"><small>" +
