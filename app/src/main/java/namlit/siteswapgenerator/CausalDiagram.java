@@ -120,8 +120,13 @@ public class CausalDiagram extends View {
         }
 
         for(int i = 0; i < mNumberOfNodes; ++i) {
-            boolean isRightHand = (i / mSiteswap.getNumberOfJugglers()) % 2 == 0;
-
+            boolean isRightHand;
+            if (0 == mSiteswap.getNumberOfJugglers()) % 2)
+            {    isRightHand= (i / mSiteswap.getNumberOfJugglers()) % 2 == 0;
+            }
+            else
+            {    isRightHand= (i % 2) == 0;
+            }
             drawNode(canvas, getNodePosition(i).x, getNodePosition(i).y, mSiteswap.stringAt(i),
                             isRightHand, isTextAbove(i));
 
