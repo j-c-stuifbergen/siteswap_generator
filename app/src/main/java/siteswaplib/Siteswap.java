@@ -689,10 +689,18 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 					str += "<sub><small>";
 					if (mNumberOfJugglers >= 3)
 						str += Character.toString((char) ('A' + (position + at(position)) % mNumberOfJugglers));
-					if (((juggler + at(position)) / mNumberOfJugglers) % 2 == 0)
-						str += "x";
+					if (mNumberOfJugglers % 2 == 0)
+					{	if (((juggler + at(position)) / mNumberOfJugglers) % 2 == 0)
+							str += "x";
+						else
+							str += "||";
+					}
 					else
-						str += "||";
+					{	if ( at(position) % 2 == 0)
+							str += "x";
+						else
+							str += "||";
+					}
 					str += "</small></sub>";
 				}
 				str += "&ensp;";
