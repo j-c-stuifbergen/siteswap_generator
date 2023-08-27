@@ -455,18 +455,25 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 	}
 
 	public class ClubDistribution {
-		public int leftHandNumberOfClubs;
-		public int rightHandNumberOfClubs;
+		public int secondHandNumberOfClubs;
+		public int firstHandNumberOfClubs;
+		private boolean jugglerIsEven;
 
-		public ClubDistribution(int left, int right) {
-			leftHandNumberOfClubs = left;
-			rightHandNumberOfClubs = right;
+		public ClubDistribution(int first, int second) {
+			firstHandNumberOfClubs = first;
+			secondHandNumberOfClubs = second;
 		}
 
 		@Override
 		public String toString() {
-			return String.valueOf(leftHandNumberOfClubs) + "|" +
-					String.valueOf(rightHandNumberOfClubs);
+			if (jugglerIsEven)
+			{	return String.valueOf(secondHandNumberOfClubs) + "|" +
+					String.valueOf(firstHandNumberOfClubs);
+			}
+			else
+			{	return String.valueOf(firstHandNumberOfClubs) + "|" +
+					String.valueOf(secondHandNumberOfClubs);
+			}
 		}
 
 		@Override
@@ -474,8 +481,8 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 			if (! (obj instanceof ClubDistribution))
 				return false;
 			ClubDistribution rhs = (ClubDistribution) obj;
-			return this.leftHandNumberOfClubs == rhs.leftHandNumberOfClubs &&
-					this.rightHandNumberOfClubs == rhs.rightHandNumberOfClubs;
+			return this.secondHandNumberOfClubs == rhs.secondHandNumberOfClubs &&
+					this.firstHandNumberOfClubs == rhs.firstHandNumberOfClubs;
 		}
 	}
 
@@ -491,7 +498,8 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 			int numberOfClubsLeftHand = numberOfClubsForJuggler / 2;
 
 			groundStateClubDistribution[juggler] =
-					new ClubDistribution(numberOfClubsLeftHand, numberOfClubsRightHand);
+					new ClubDistribution(numberOfClubsRightHand, numberOfClubsLeftHand);
+			groundStateClubDistribution[juggler].jugglerIsEven = juggler % 2;
 		}
 		return groundStateClubDistribution;
 	}
@@ -512,15 +520,15 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 			if( jugglerPosition < getNumberOfObjects() % getNumberOfJugglers())
 				numberOfClubsForJuggler++;
 			int numberOfClubsStartingHand = numberOfClubsForJuggler / 2 + numberOfClubsForJuggler % 2;
-			int numberOfClubsSecondHand = numberOfClubsForJuggler / 2;
+			int numberOfClubsOtherHand = numberOfClubsForJuggler / 2;
 			int numberOfGetinsForJuggler = getin.period_length() / getNumberOfJugglers();
 			if (getin.period_length() % getNumberOfJugglers() >= (getNumberOfJugglers() - juggler))
 				numberOfGetinsForJuggler++;
 			boolean isStartRight = (numberOfGetinsForJuggler % 2) == 0;
 			int right = numberOfClubsStartingHand;
-			int left = numberOfClubsSecondHand;
+			int left = numberOfClubsOtherHand;
 			if (!isStartRight) {
-				right = numberOfClubsSecondHand;
+				right = numberOfClubsOtherHand;
 				left = numberOfClubsStartingHand;
 			}
 			initialClubDistribution[juggler] = new ClubDistribution(left, right);
@@ -541,14 +549,14 @@ public class Siteswap implements Comparable<Siteswap>, Iterable<Byte>, Serializa
 				isRightHandCatching = !isRightHandCatching;
 
 			if (isRightHandThrowing)
-				initialClubDistribution[throwingJuggler].rightHandNumberOfClubs--;
+				initialClubDistribution[throwingJuggler].firstHandNumberOfClubs--;
 			else
-				initialClubDistribution[throwingJuggler].leftHandNumberOfClubs--;
+				initialClubDistribution[throwingJuggler].secondHandNumberOfClubs--;
 
 			if (isRightHandCatching)
-				initialClubDistribution[catchingJuggler].rightHandNumberOfClubs++;
+				initialClubDistribution[catchingJuggler].firstHandNumberOfClubs++;
 			else
-				initialClubDistribution[catchingJuggler].leftHandNumberOfClubs++;
+				initialClubDistribution[catchingJuggler].secondHandNumberOfClubs++;
 		}
 
 		return initialClubDistribution;
